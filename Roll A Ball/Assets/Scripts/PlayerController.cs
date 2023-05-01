@@ -46,4 +46,11 @@ public class PlayerController : MonoBehaviour
         
         controller. Move(moveDirection*Time.deltaTime);
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("PickUp"))
+        {
+            other.gameObject.SetActive(false); //disable game objects
+        }
+    }       
 }
