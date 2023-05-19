@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
+using UnityEngine.UI;   
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
@@ -9,6 +10,15 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5.5f;
     public float jumpForce = 10.5f;
     public float gravity = 20f;
+
+    private int count;
+    public int winValue = 14;//allows user to easily switch requirements for victory & UI will still work
+
+
+    public TextMeshProUGUI countText;   
+    public GameObject winText;
+    public List<GameObject> pickUps = new List<GameObject>();
+
 
     public CharacterController controller;
     private Vector3 moveDirection = Vector3.zero;
@@ -18,8 +28,20 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
-    }
 
+        count = 0;
+        SetCountText();
+        winText.SetActive(false);
+    }
+ 
+    void SetCountText()
+    {
+        countText.text = "Count: " + count.ToString();
+        if(count >= winValue)
+        {
+            winText.SetActive(true);
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -45,12 +67,28 @@ public class PlayerController : MonoBehaviour
         }
         
         controller. Move(moveDirection*Time.deltaTime);
+
+    if(pickUps.Count > 0)
+    {
+        for(int i = 0; i < pickUps.Count; i++) //A loop that delete's an unused index
+        {
+            if(pickUps[i] == null)
+            {
+                pickUps.RemoveAt(i);
+
+                i--;
+            }
+        }
+    }
+
     }
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.CompareTag("PickUp"))
         {
-            other.gameObject.SetActive(false); //disable game objects
+            Destroy(other.gameObject);//removes game objects
+            count = count + 1;  
+            SetCountText();
         }
     }       
 }
